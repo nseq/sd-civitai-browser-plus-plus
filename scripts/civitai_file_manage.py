@@ -20,6 +20,7 @@ import scripts.civitai_global as gl
 import scripts.civitai_api as _api
 import scripts.civitai_file_manage as _file
 import scripts.civitai_download as _download
+from scripts.encryption.img import EncryptedImage
 
 try:
     from send2trash import send2trash
@@ -166,7 +167,7 @@ def save_preview(file_path, api_response, overwrite_toggle=False, sha256=None):
     name = os.path.splitext(file_name)[0]
     filename = f'{name}.preview.png'
     image_path = os.path.join(install_path, filename)
-    
+
     if not overwrite_toggle:
         if os.path.exists(image_path):
             return
@@ -195,7 +196,15 @@ def save_preview(file_path, api_response, overwrite_toggle=False, sha256=None):
                             if response.status_code == 200:
                                 with open(image_path, 'wb') as img_file:
                                     img_file.write(response.content)
-                                print(f"Preview saved at \"{image_path}\"")
+                                try:
+                                    imgkeys = ['Encrypt', 'EncryptPwdSha']
+                                    img = Image.open(image_path)
+                                    imginfo = img.info or {}
+                                    if not all(k in imginfo for k in imgkeys):
+                                        EncryptedImage.from_image(img).save(image_path)
+                                        print(f"Encrypted preview saved at \"{image_path}\"")
+                                except Exception as e:
+                                    print(f"Error : {image_path} : {e}")
                             else:
                                 print(f"Failed to save preview. Status code: {response.status_code}")
 
