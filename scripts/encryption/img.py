@@ -267,10 +267,13 @@ def hook_http_request(app: FastAPI):
 
             if ext in image_extensions:
                 should_resize = str(models) in str(file_path) or str(emb_dir) in str(file_path)
-                content = await imgAsync(file_path, image_keys, should_resize)
-                if content:
-                    return Response(content=content, media_type="image/png")
-                return await call_next(req)
+                try:
+                    content = await imgAsync(file_path, image_keys, should_resize)
+                    if content:
+                        return Response(content=content, media_type="image/png")
+                    return await call_next(req)
+                except Exception as e:
+                    print(f"Error Response: {e}")
 
         return await call_next(req)
 
@@ -297,7 +300,7 @@ elif not password:
     msg = f'{AR} {TITLE} {RED}Disabled{RST}, Missing --encrypt-pass command line argument.'
 else:
     script_callbacks.on_app_started(app_started_callback)
-    msg = f'{AR} {TITLE} {BLUE}Enabled{RST}, Encryption Level {ORG}6{RST}' \
+    msg = f'{AR} {TITLE} {BLUE}Enabled{RST}, Encryption Level {ORG}7{RST}' \
           f'\n{AR} {TITLE} Check the release page for decrypting images in local Windows ' \
           f'https://github.com/gutris1/sd-encrypt-image'
 
