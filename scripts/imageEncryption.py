@@ -20,7 +20,7 @@ from modules.api import api
 Embed  = shared.cmd_opts.embeddings_dir
 Models = Path(models_path)
 
-password = getattr(shared.cmd_opts, 'encrypt_pass', None)
+password = getattr(shared.cmd_opts, 'enc_pw', None)
 image_extensions = ['.png', '.jpg', '.jpeg', '.gif', '.webp', '.avif']
 image_keys = ['Encrypt', 'EncryptPwdSha']
 
